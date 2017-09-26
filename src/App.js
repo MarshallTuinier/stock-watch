@@ -151,7 +151,7 @@ class App extends Component {
         <Background width={screenWidth} height={screenHeight} />
         <Center>
           <h1>Stock Watch</h1>
-          <h3>Enter a stock symbol below to track it's changes</h3>
+          <h3>Enter a stock symbol below to track its changes</h3>
           <form>
             <Input type="text" onChange={this.handleChange} />
             <Button onClick={this.handleSearch}>Search</Button>{' '}
