@@ -21,7 +21,7 @@ const numberMapper = str => {
     return Math.floor(1827 / 7 * 5);
   }
   if (str === 'last 10 years') {
-    return Math.floor(3654 / 7 * 5);
+    return Math.floor(3650 / 7 * 5);
   }
 };
 

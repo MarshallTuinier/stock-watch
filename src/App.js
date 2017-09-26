@@ -14,9 +14,10 @@ class App extends Component {
     this.state = {
       data: {},
       dropdownOpen: false,
-      stockSymbol: 'KO',
+      stockSymbol: 'AAPL',
       activeItem: 'last 30 days',
-      input: ''
+      input: '',
+      error: false
     };
   }
 
@@ -39,6 +40,28 @@ class App extends Component {
     });
   };
 
+  handleSearch = event => {
+    event.preventDefault();
+    this.setState({
+      data: {},
+      error: false
+    });
+    fetchStockData(this.state.input).then(json => {
+      console.log(json);
+      if (json['Error Message']) {
+        this.setState({
+          error: true
+        });
+      } else {
+        this.setState({
+          data: json,
+          stockSymbol: this.state.input,
+          input: ''
+        });
+      }
+    });
+  };
+
   //Grab our data from the coindesk api
   componentDidMount() {
     fetchStockData(this.state.stockSymbol).then(json => {
@@ -52,12 +75,29 @@ class App extends Component {
     const { screenWidth, screenHeight } = this.props;
     const { data } = this.state;
 
+    //If there is an error, we want to conditionally render an error component, and have the user be able to try to send another Stock
+    if (this.state.error)
+      return (
+        <div className={this.props.className}>
+          <Center>
+            <h1>Stock Watch</h1>
+            <h3>Sorry, an error has occured. Please try again.</h3>
+            <form>
+              <Input type="text" onChange={this.handleChange} />
+              <Button onClick={this.handleSearch}>Search</Button>{' '}
+            </form>
+          </Center>
+          <Background width={screenWidth} height={screenHeight} />
+        </div>
+      );
+
     //Conditional Rendering to ensure the data is loaded when trying to render
     //TODO Bring in nice neat loading component
     if (!data['Time Series (Daily)'])
       return (
         <div className={this.props.className}>
           <Center>
+            <h1>Stock Watch</h1>
             <h1>Loading...</h1>
           </Center>
           <Background width={screenWidth} height={screenHeight} />
@@ -77,10 +117,14 @@ class App extends Component {
 
     //Get the determined number of days based on the selected filter
     const days = numberMapper(this.state.activeItem);
-    const prices = allPrices.slice(
-      allPrices.length - days - 1,
-      allPrices.length + 1
-    );
+    const makePrices = (allPrices, days) => {
+      if (days > allPrices.length) {
+        return allPrices;
+      }
+      return allPrices.slice(allPrices.length - days - 1, allPrices.length + 1);
+    };
+
+    const prices = makePrices(allPrices, days);
 
     //Most current price is grabbed from the last element in our dataset
     const currentPrice = prices[prices.length - 1].price;
@@ -93,11 +137,15 @@ class App extends Component {
         <Background width={screenWidth} height={screenHeight} />
         <Center>
           <h1>Stock Watch</h1>
-          <Input type="text" onChange={this.handleChange} />
+          <h3>Enter a stock symbol below to track it's changes</h3>
+          <form>
+            <Input type="text" onChange={this.handleChange} />
+            <Button onClick={this.handleSearch}>Search</Button>{' '}
+          </form>
           <ChartContainer>
             <TitleBar>
               <Title>
-                <div>{this.state.stockSymbol} Price</div>
+                <div>{this.state.stockSymbol.toUpperCase()} Price</div>
                 <Dropdown
                   handleDropdown={this.handleDropdown}
                   handleSelect={this.handleSelect}
@@ -150,9 +198,9 @@ const Center = styled.div`
   flex: 1;
   font-family: arial;
   flex-direction: column;
-  h1 {
+  h1,
+  h3 {
     color: #27273f;
-    text-shadow: 1px 1px 2px white;
   }
 `;
 
@@ -196,8 +244,29 @@ const Input = styled.input`
   margin-bottom: 20px;
   outline: none;
   background: transparent;
-  border: 1px solid black;
+  border: 1px solid #27273f;
   color: #27273f;
+`;
+
+const Button = styled.button`
+  margin: 0 auto;
+  margin-bottom: 20px;
+  width: 130px;
+  height: 30px;
+  background-color: #6086d6;
+  border: none;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  color: white;
+  &:active {
+    transform: translateY(2px);
+  }
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 //----------------------End Styles--------------------

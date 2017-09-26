@@ -3,7 +3,12 @@ const fetchStockData = stockSymbol => {
 
   return fetch(
     `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stockSymbol}&outputsize=full&apikey=${API_KEY}`
-  ).then(res => res.json());
+  )
+    .then(res => res.json())
+    .catch(err => {
+      console.log('There was an error');
+      throw new Error('Higher-level error. ' + err.message);
+    });
 };
 
 export { fetchStockData };
