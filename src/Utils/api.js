@@ -6,8 +6,7 @@ const fetchStockData = stockSymbol => {
   )
     .then(res => res.json())
     .catch(err => {
-      console.log('There was an error');
-      throw new Error('Higher-level error. ' + err.message);
+      throw new Error(err.message);
     });
 };
 

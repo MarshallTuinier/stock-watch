@@ -46,29 +46,43 @@ class App extends Component {
       data: {},
       error: false
     });
-    fetchStockData(this.state.input).then(json => {
-      console.log(json);
-      if (json['Error Message']) {
+    fetchStockData(this.state.input)
+      .then(json => {
+        console.log(json);
+        if (json['Error Message']) {
+          this.setState({
+            error: true
+          });
+        } else {
+          this.setState({
+            data: json,
+            stockSymbol: this.state.input,
+            input: ''
+          });
+        }
+      })
+      .catch(error => {
+        console.log(`Sorry, there was an error: ${error}`);
         this.setState({
           error: true
         });
-      } else {
-        this.setState({
-          data: json,
-          stockSymbol: this.state.input,
-          input: ''
-        });
-      }
-    });
+      });
   };
 
   //Grab our data from the coindesk api
   componentDidMount() {
-    fetchStockData(this.state.stockSymbol).then(json => {
-      this.setState({
-        data: json
+    fetchStockData(this.state.stockSymbol)
+      .then(json => {
+        this.setState({
+          data: json
+        });
+      })
+      .catch(error => {
+        console.log(`Sorry, there was an error: ${error}`);
+        this.setState({
+          error: true
+        });
       });
-    });
   }
 
   render() {
