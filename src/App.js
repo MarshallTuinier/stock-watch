@@ -48,7 +48,6 @@ class App extends Component {
     });
     fetchStockData(this.state.input)
       .then(json => {
-        console.log(json);
         if (json['Error Message']) {
           this.setState({
             error: true
