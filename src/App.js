@@ -203,6 +203,7 @@ const Center = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   top: 0;
   left: 0;
   bottom: 0;
@@ -223,6 +224,10 @@ const ChartContainer = styled.div`
   border-radius: 8px;
   color: white;
   padding-bottom: 50px;
+  @media (max-width: 650px) {
+    width: 300px;
+    height: 200px;
+  }
 `;
 
 const Title = styled.div`margin-top: -20px;`;
