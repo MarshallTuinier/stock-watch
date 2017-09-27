@@ -178,7 +178,6 @@ class App extends Component {
             </TitleBar>
             <Chart data={prices} />
           </ChartContainer>
-          <Disclaimer>{data.disclaimer}</Disclaimer>
         </Center>
       </div>
     );
@@ -224,12 +223,6 @@ const ChartContainer = styled.div`
   border-radius: 8px;
   color: white;
   padding-bottom: 50px;
-`;
-
-const Disclaimer = styled.p`
-  color: white;
-  opacity: 0.4;
-  font-size: 11px;
 `;
 
 const Title = styled.div`margin-top: -20px;`;
