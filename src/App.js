@@ -130,6 +130,8 @@ class App extends Component {
 
     //Get the determined number of days based on the selected filter
     const days = numberMapper(this.state.activeItem);
+
+    //Below is just a check to ensure the data falls into the requested range set.  If not, the entire set is returned
     const makePrices = (allPrices, days) => {
       if (days > allPrices.length) {
         return allPrices;
