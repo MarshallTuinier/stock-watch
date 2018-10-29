@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import Background from './Components/Background';
-import { withScreenSize } from '@vx/responsive';
-import styled from 'styled-components';
-import Chart from './Components/Chart';
-import Dropdown from './Components/Dropdown';
-import formatPrice from './Utils/formatPrice';
-import { fetchStockData } from './Utils/api';
-import { numberMapper } from './Utils/numberMapper';
+import React, { Component } from "react";
+import Background from "./Components/Background";
+import { withScreenSize } from "@vx/responsive";
+import styled from "styled-components";
+import Chart from "./Components/Chart";
+import Dropdown from "./Components/Dropdown";
+import formatPrice from "./Utils/formatPrice";
+import { fetchStockData } from "./Utils/api";
+import { numberMapper } from "./Utils/numberMapper";
 
 class App extends Component {
   constructor(props) {
@@ -14,9 +14,9 @@ class App extends Component {
     this.state = {
       data: {},
       dropdownOpen: false,
-      stockSymbol: 'AAPL',
-      activeItem: 'last 30 days',
-      input: '',
+      stockSymbol: "AAPL",
+      activeItem: "last 30 days",
+      input: "",
       error: false
     };
   }
@@ -40,48 +40,56 @@ class App extends Component {
     });
   };
 
-  handleSearch = event => {
+  handleSearch = async event => {
     event.preventDefault();
     this.setState({
       data: {},
       error: false
     });
-    fetchStockData(this.state.input)
-      .then(json => {
-        if (json['Error Message']) {
-          this.setState({
-            error: true
-          });
-        } else {
-          this.setState({
-            data: json,
-            stockSymbol: this.state.input,
-            input: ''
-          });
-        }
-      })
-      .catch(error => {
-        console.log(`Sorry, there was an error: ${error}`);
+    try {
+      const json = await fetchStockData(this.state.input);
+      console.log(json);
+      if (json["Error Message"]) {
         this.setState({
           error: true
         });
+      } else {
+        this.setState({
+          data: json,
+          stockSymbol: this.state.input,
+          input: ""
+        });
+      }
+    } catch (error) {
+      console.log(`Sorry, there was an error: ${error}`);
+      this.setState({
+        error: true
       });
+    }
   };
 
   //Grab our data from the coindesk api
-  componentDidMount() {
-    fetchStockData(this.state.stockSymbol)
-      .then(json => {
-        this.setState({
-          data: json
-        });
-      })
-      .catch(error => {
-        console.log(`Sorry, there was an error: ${error}`);
+  async componentDidMount() {
+    try {
+      const json = await fetchStockData("AAPL");
+      console.log(json);
+      if (json["Error Message"]) {
         this.setState({
           error: true
         });
+      } else {
+        this.setState({
+          data: json,
+          stockSymbol: "AAPL",
+          input: ""
+        });
+      }
+    } catch (error) {
+      console.log(`Sorry, there was an error: ${error}`);
+      this.setState({
+        error: true
       });
+    }
   }
 
   render() {
@@ -97,7 +105,7 @@ class App extends Component {
             <h3>Sorry, an error has occured. Please try again.</h3>
             <form>
               <Input type="text" onChange={this.handleChange} />
-              <Button onClick={this.handleSearch}>Search</Button>{' '}
+              <Button onClick={this.handleSearch}>Search</Button>{" "}
             </form>
           </Center>
           <Background width={screenWidth} height={screenHeight} />
@@ -106,7 +114,7 @@ class App extends Component {
 
     //Conditional Rendering to ensure the data is loaded when trying to render
     //TODO Bring in nice neat loading component
-    if (!data['Time Series (Daily)'])
+    if (!data["Time Series (Daily)"])
       return (
         <div className={this.props.className}>
           <Center>
@@ -118,11 +126,11 @@ class App extends Component {
       );
 
     //Format our data to the desired shape
-    const allPrices = Object.keys(data['Time Series (Daily)'])
+    const allPrices = Object.keys(data["Time Series (Daily)"])
       .map(d => {
         return {
           date: d,
-          price: data['Time Series (Daily)'][d]['4. close']
+          price: data["Time Series (Daily)"][d]["4. close"]
         };
       })
       //We need to reverse the data to get it in chornological order
@@ -155,7 +163,7 @@ class App extends Component {
           <h3>Enter a stock symbol below to track its changes</h3>
           <form>
             <Input type="text" onChange={this.handleChange} />
-            <Button onClick={this.handleSearch}>Search</Button>{' '}
+            <Button onClick={this.handleSearch}>Search</Button>{" "}
           </form>
           <ChartContainer>
             <TitleBar>
@@ -170,9 +178,9 @@ class App extends Component {
               </Title>
               <Prices>
                 <div>{formatPrice(currentPrice)}</div>
-                <div className={hasIncreased ? 'increased' : 'decreased'}>
+                <div className={hasIncreased ? "increased" : "decreased"}>
                   <small>
-                    {hasIncreased ? '+' : ''}
+                    {hasIncreased ? "+" : ""}
                     {formatPrice(diffPrice)}
                   </small>
                 </div>
@@ -232,7 +240,9 @@ const ChartContainer = styled.div`
   }
 `;
 
-const Title = styled.div`margin-top: -20px;`;
+const Title = styled.div`
+  margin-top: -20px;
+`;
 
 const TitleBar = styled.div`
   padding: 15px;
